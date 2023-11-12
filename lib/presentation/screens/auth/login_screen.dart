@@ -1,4 +1,7 @@
+import 'package:app_tr_mobile/presentation/provider/token.provider.dart';
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:provider/provider.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -6,47 +9,43 @@ class LoginScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _LoginView(),
+      body: SafeArea(child: _LoginView()),
     );
   }
 }
 
 class _LoginView extends StatelessWidget {
 
+  
   @override
   Widget build(BuildContext context) {
+    
+    final colors = Theme.of(context).colorScheme;
+    final tokenProvider = context.watch<TokenProvider>(); 
+
+    final textEmailController = TextEditingController();
+
+    final passwordController = TextEditingController();
+
+
     return  SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 40),
         child: Column(
           children: [
             _LoginHeaderView(),
-            const Padding(
-              padding:  EdgeInsets.symmetric(vertical: 40),
-              child:  Divider(),
+            Padding(
+              padding:  const EdgeInsets.symmetric(vertical: 40),
+              child:  Divider( color: colors.primaryContainer),
             ),
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                TextFormField(
-                  decoration: const InputDecoration(
-                    border:  OutlineInputBorder(
-                      borderSide: BorderSide(width: 1),
-                    ),
-                    label: Text("Email"),
-                    hintText: "Ej. mia@mia.com"
-                  ),
-                ),
+
+                _InputEmail(controller: textEmailController),
                 const SizedBox(height: 25),
-                TextFormField(
-                  decoration: const InputDecoration(
-                    border:  OutlineInputBorder(
-                      borderSide: BorderSide(width: 1),
-                    ),
-                    label: Text("Contraseña"),
-                    hintText: "Ingresa tu contraseña"
-                  ),
-                ),
+
+                _InputPassword(controller:  passwordController),
                 const SizedBox(height: 25),
                 
                 SizedBox(
@@ -54,11 +53,20 @@ class _LoginView extends StatelessWidget {
                   child: FilledButton.icon(
                     icon: const Icon(Icons.login), 
                     label: const Text("Ingresar"),
-                    style: const ButtonStyle(
-                      maximumSize:  MaterialStatePropertyAll(Size.infinite),
-                      padding: MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 20))
+                    style: ButtonStyle(
+                      backgroundColor: MaterialStatePropertyAll(colors.primary),
+                      maximumSize: const MaterialStatePropertyAll(Size.infinite),
+                      padding: const MaterialStatePropertyAll(EdgeInsets.symmetric(vertical: 20))
                     ),
-                    onPressed: (){}
+                    onPressed: (){
+
+                      String email = textEmailController.value.text;
+                      String pass = passwordController.value.text;
+
+                      tokenProvider.pedirToken(email,pass);
+                      // Navigator.of(context).push("/task-lists");
+                      context.go("/task-lists");
+                    }
                   ),
                 )
               ],
@@ -69,6 +77,50 @@ class _LoginView extends StatelessWidget {
 
           ],
         ),
+      ),
+    );
+  }
+}
+
+class _InputPassword extends StatelessWidget {
+  
+  TextEditingController controller;
+
+  _InputPassword({required this.controller});
+
+  @override
+  Widget build(BuildContext context) {
+    return TextFormField(
+      controller: controller,
+      decoration: const InputDecoration(
+        border:  OutlineInputBorder(
+          borderSide: BorderSide(width: 1),
+        ),
+        label: Text("Contraseña"),
+        hintText: "Ingresa tu contraseña"
+      ),
+    );
+  }
+}
+
+class _InputEmail extends StatelessWidget {
+
+  TextEditingController controller;
+
+  _InputEmail({ required this.controller });
+
+
+  @override
+  Widget build(BuildContext context) {
+
+    return TextFormField(
+      controller: controller,
+      decoration: const InputDecoration(
+        border:  OutlineInputBorder(
+          borderSide: BorderSide(width: 1),
+        ),
+        label: Text("Email"),
+        hintText: "Ej. mia@mia.com"
       ),
     );
   }

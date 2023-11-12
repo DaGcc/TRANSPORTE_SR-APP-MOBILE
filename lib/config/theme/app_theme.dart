@@ -37,7 +37,7 @@ class AppTheme {
     return ThemeData(
       useMaterial3: true,
       colorSchemeSeed: _coloresThemes[_selectedColor],
-      brightness:Brightness.dark //es para el theme de color, tipo oscuro o claro
+      brightness:Brightness.light //es para el theme de color, tipo oscuro o claro
     );
   }
 }
